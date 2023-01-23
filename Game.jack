@@ -1,0 +1,379 @@
+class Game {
+		
+		field int delay, roundNum, player1Score, player2Score, turn;
+		field boolean gameOver;
+		field int screenWidth, screenHeight;
+		field GoalStruct goalst;
+		field Ball ball, target;
+		field Keeper keeper;
+		field boolean kick;
+		field boolean releasedKick;
+		field boolean ballMove;
+		field String first_name, second_name;
+		field Random rand;
+
+		constructor Game new(String firstname, String secondname){
+			let first_name = firstname;
+			let second_name = secondname;
+			let screenWidth = 512;
+			let screenHeight = 256;
+
+			let gameOver = false;
+			let kick = false;
+			let releasedKick = false;
+
+			let ball = Ball.new(screenWidth/2, screenHeight - 31, 30);
+			let goalst = GoalStruct.new(screenWidth, screenHeight);
+			let target = Ball.new(255,goalst.getBottomNetY(),10);
+			let keeper = Keeper.new(255,goalst.getBottomLeftBarY(), 40, 50);
+
+			let roundNum = 1;
+			let turn = 1;
+			let player1Score = 0;
+			let player2Score = 0;
+
+			let rand = Random.new(2022);
+
+			do target.setTarget(screenWidth, target.gety(), 15);
+
+			do target.setTarget(screenWidth, target.gety(), 15);	
+					
+			
+			return this;
+
+		}
+
+		// get methods
+		method String getFirstName() {return first_name;}
+		method String getSecondName() {return second_name;}
+
+		//Player1 = 0, Player2 = 1
+		method int getWinnerName(){
+			if (player1Score > player2Score){
+						return 0;
+				}
+				else{
+						return 1;
+				}
+		
+		}
+
+		method String getLoserName() {
+			if (player1Score > player2Score){
+						return 1;
+				}
+				else{
+						return 0;
+				}
+		}
+		method int getWinnerScore(){
+				if (player1Score > player2Score){
+						return player1Score;
+				}
+				else{
+						return player2Score;
+				}
+		}
+		method int getLoserScore(){
+				if (player1Score > player2Score){
+						return player2Score;
+				}
+				else{
+						return player1Score;
+				}
+		}
+		method int getPlayer1Score() {
+			return player1Score;
+		}
+		method int getPlayer2Score() {
+			return player2Score;
+		}
+
+		// set names
+		method void setFirstName(String name){
+			let first_name = name;
+			return;
+		}
+		method void setSecondName(String name){
+			let second_name = name;
+			return;
+		}
+		method void dispose() {
+			do first_name.dispose();
+			do second_name.dispose();
+			do goalst.dispose();
+			do ball.dispose();
+			do target.dispose();
+			do keeper.dispose();
+			do Memory.deAlloc(this);
+			return;
+		}
+
+		// reset game objects for another 5 kicks rounds (if tie)
+		method void reset(boolean resetScore){
+				let gameOver = false;
+				let kick = false;
+				let releasedKick = false;
+				let turn = 1;
+				let roundNum = 1;
+				
+				if (resetScore){
+					let player1Score = 0;
+					let player2Score = 0;
+				}
+
+				do Graphics.eraseKeeper(keeper.getPrevx(), keeper.getPrevy(), keeper.getwidth(), keeper.getheight(), goalst);
+				do Graphics.eraseKeeper(keeper.getx(), keeper.gety(), keeper.getwidth(), keeper.getheight(), goalst);
+				do Graphics.eraseBall(ball.getx(), ball.gety(), ball.getSize(),goalst, keeper);
+				
+				do ball.reset(screenWidth/2, screenHeight - 31, 30);
+				do target.reset(255,goalst.getBottomNetY(),10);
+				do keeper.reset(255,goalst.getBottomLeftBarY());
+
+				do target.setTarget(screenWidth, target.gety(), 15);
+				do Screen.clearScreen();
+
+				do Output.moveCursor(18,0);
+	    		do Output.printString(first_name);
+	    		do Output.moveCursor(20,0);
+	    		do Output.printString(second_name);
+	    		do Screen.drawLine(0,215,160,215);
+	    		do Screen.drawLine(70,190,70,240);
+	    		return;
+		}
+
+		// resets game objects for another kicl round
+		method void nextRound(boolean goal){
+			
+				let kick = false;
+				let releasedKick = false;
+				
+				do Graphics.eraseKeeper(keeper.getPrevx(), keeper.getPrevy(), keeper.getwidth(), keeper.getheight(), goalst);
+				do Graphics.eraseKeeper(keeper.getx(), keeper.gety(), keeper.getwidth(), keeper.getheight(), goalst);
+				do Graphics.eraseBall(ball.getx(), ball.gety(), ball.getSize(), goalst, keeper);
+				
+				do ball.reset(screenWidth/2, screenHeight - 31, 30);
+				do target.reset(255,goalst.getBottomNetY(),10);
+				do keeper.reset(255,goalst.getBottomLeftBarY());
+
+				do target.setTarget(screenWidth, target.gety(), 15);
+				do Output.moveCursor(0,0);
+				do Output.moveCursor(0,1);
+				do Output.moveCursor(0,2);
+				do Output.moveCursor(0,3);
+				do Output.moveCursor(0,4);
+				do Output.moveCursor(0,5);
+				do Output.moveCursor(0,6);
+
+				do Output.moveCursor(18,0);
+	    		do Output.printString(first_name);
+	    		do Output.moveCursor(20,0);
+	    		do Output.printString(second_name);
+	    		do Screen.drawLine(0,215,160,215);
+	    		do Screen.drawLine(70,190,70,240);
+
+				// player 2 kicked
+	    		if(turn = 2){
+	    			if (goal){ // draw on score board
+	    				do Screen.drawCircle(60 + (roundNum*20), 225, 5);
+	    				let player2Score = player2Score + 1;
+	    			}
+	    			else{
+
+		    			do Screen.drawCircle(60 + (roundNum*20), 225, 5);
+		    			do Screen.setColor(false);
+		    			do Screen.drawCircle(60 + (roundNum*20), 225, 4);
+		    			do Screen.setColor(true);
+	    			}
+
+	    			let roundNum = roundNum + 1;
+	    			let turn = 1;
+	    		}
+	    		else{ // player 1 kicked
+	    			if (goal){ // draw on score board
+		    			do Screen.drawCircle(60 + (roundNum*20), 205, 5);
+		    			let player1Score = player1Score + 1;
+		    		}
+		    		else{
+
+		    			do Screen.drawCircle(60 + (roundNum*20), 205, 5);
+		    			do Screen.setColor(false);
+		    			do Screen.drawCircle(60 + (roundNum*20), 205, 4);
+		    			do Screen.setColor(true);
+		    		}
+
+	    			let turn = 2;
+	    		}
+
+
+    		do run();
+
+    		return;
+
+		}
+
+		// run the game logic and graphics
+		method int run(){
+			
+			var boolean goal;
+			
+
+			// randomally goal keeper choses direction to move
+			do keeper.setDirection(rand.nextInt(3));
+			
+			// end of 5 rounds of kicks
+			if (roundNum = 6){
+				if (~(player2Score = player1Score)){
+					let gameOver = true;
+				}
+				else{ // tie
+					do Output.moveCursor(15,30);
+					do Output.printString("Tie");
+					do Sys.wait(1000);
+					do Output.moveCursor(15,30);
+					do reset(false);
+				}
+				
+			}
+			let goal = false;
+			do Graphics.drawGoalSt(goalst);
+			do Graphics.drawBall(ball, goalst, keeper);
+			do Graphics.drawKeeper(keeper, goalst);
+			
+			do Output.moveCursor(18,0);
+    		do Output.printString(first_name);
+    		do Output.moveCursor(20,0);
+    		do Output.printString(second_name);
+    		do Screen.drawLine(0,215,150,215);
+    		do Screen.drawLine(70,190,70,240);
+
+			while(~gameOver){
+				if (checkInput()){
+
+					let ballMove = ball.move(screenWidth,screenHeight, goalst, keeper);
+					
+					if(ballMove){ 
+						if ((~(keeper.getdx() = 0)) | (~(keeper.getdy() = 0))){ // draw keeper just if the ball moves (reduce draw time)
+							do Graphics.drawKeeper(keeper, goalst);
+						}
+						
+						do Graphics.drawBall(ball, goalst, keeper);
+						do keeper.move(screenWidth,screenHeight);
+						
+						
+		
+					}else{
+					if((~ballMove) & (releasedKick)){ // the ball arrived to target (kick finsihed)
+
+						if(goalst.isInGoal(ball)){
+							do Output.moveCursor(15,30);
+							do Output.printString("Goal!!!");
+
+							let goal = true;
+
+						}
+						else{
+							do Output.moveCursor(15,30);
+							do Output.printString("Missed");
+				
+						}
+						
+						do Sys.wait(1000);
+						// delete from screen the message
+						do Output.moveCursor(15,30);
+						do Output.moveCursor(15,31);
+						do Output.moveCursor(15,32);
+						do Output.moveCursor(15,33);
+						do Output.moveCursor(15,34);
+						do Output.moveCursor(15,35);
+						do Output.moveCursor(15,36);
+						do nextRound(goal);
+						
+				
+					}}
+					do Sys.wait(70);
+					
+
+				}
+				else{
+					return 0; // quit game
+				}
+				
+			}
+			// go to menu -> play again? or exit
+			return 1;
+
+		}
+
+
+		// check user input
+		method boolean checkInput() {
+			var int key;
+			let key = Keyboard.keyPressed();
+			if (key = 140){ // escape to quit
+				return false;
+			}
+			else{if ((key = 32) | (key = 131)) { // space bar or up arrow to kick
+				if (~releasedKick){ 
+						if (~kick){ // first time hitting kick button
+							do target.setTarget(target.gettx(), 0, 15); // set target to vertical (stronger kick)
+							let kick = true;
+						}
+						else{ // move target vertical as long player keeps holding kick button
+
+							do target.move(screenWidth,screenHeight, null, null);
+							
+							do Graphics.drawTarget(target, goalst, keeper);
+						}
+						
+						
+					}
+				
+			
+		}
+		else{ 
+			if (kick){ // kick ball to target (user released kick button)
+					let releasedKick = true;
+					do ball.setTarget(target.getx(), target.gety(), 15);
+					let kick = false;
+					do Graphics.eraseBall(target.getx(), target.gety(), target.getSize(), goalst, keeper);
+		
+					
+			}
+			if (~releasedKick){ // before kick, target moves horizontaly on goal structure
+				if(~(target.move(screenWidth,screenHeight, null, null))){ // flips direction
+					do target.setTarget(screenWidth - target.getx(), target.gety(), 15);
+				}
+				do Graphics.drawTarget(target, goalst, keeper);
+			}
+		}}
+		
+		return true;
+	}
+
+
+	method int exit(){
+		var int key;
+		let key = Keyboard.keyPressed();
+
+		while(key = 0){
+			let key = Keyboard.keyPressed();
+		}
+
+		if (key = 82){ // R for restart with the other players
+			return 2;
+		}
+		else {if (key = 140){ // esc for exit
+			return 0;
+		}
+		else{return 1;}} // any other key for restart with the same players
+		
+
+
+	}
+
+
+
+
+
+}

@@ -1,0 +1,198 @@
+class Ball {
+	field int posX, posY, Size, targetX, targetY, dx, dy, prevPosX, prevPosY, prevSize;
+
+	constructor Ball new(int x, int y, int size) {
+		let posX = x;
+		let posY = y;
+		let prevPosX = -1;
+		let prevPosY = -1;
+		let prevSize = -1;
+		let Size = size;
+		let dx = 0;
+		let dy = 0;
+		let targetX = x;
+		let targetY = y;
+		return this;
+	}
+
+	method int getx() { return posX; }
+	method int gety() { return posY; }
+	method int getSize() { return Size; }
+	method int getdx() { return dx; }
+	method int getdy() { return dy; }
+	method int gettx() {return targetX;}
+	method int getty() {return targetY;}
+	method int getPrevSize(){return prevSize;}
+	method int getPrevx(){return prevPosX;}
+	method int getPrevy(){return prevPosY;}
+
+	method void reset(int x, int y, int size){
+		let posX = x;
+		let posY = y;
+		let prevPosX = -1;
+		let prevPosY = -1;
+		let prevSize = -1;
+		let Size = size;
+		let dx = 0;
+		let dy = 0;
+		let targetX = x;
+		let targetY = y;
+		return;
+	}
+
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+    method void decSize(){
+        if (Size > 14){
+        	let Size = Size - 2;
+        }
+
+    	return;
+    }
+
+    method void incSize(){
+        if (Size < 30){
+        	let Size = Size + 1;
+        }
+
+    	return;
+    }
+
+    method void setSpeed(int dX, int dY){
+    		let dx = dX;
+    		let dy = dY;
+    		return;
+   	}
+
+   	method void setTarget(int x, int y, int fps){ // set dx and dy according to the target
+    		let targetX = x;
+    		let targetY = y;
+    		let dx = (targetX - posX) / fps;
+    		let dy = (targetY - posY) / fps;
+
+
+    		// fix zeroes dt because int
+  			if((targetX - posX < 0) & (dx = 0)){
+  				let dx = -1;
+  			}
+
+  			if((targetX - posX > 0) & (dx = 0)){
+  				let dx = 1;
+  			}
+
+  			if((targetY - posY < 0) & (dy = 0)){
+  				let dy = -1;
+  			}
+
+  			if((targetY - posY > 0) & (dy = 0)){
+  				let dy = 1;
+  			}
+
+    		return;
+   	}
+
+
+
+
+    method boolean move(int screenWidth, int screenHeight, GoalStruct goalst, Keeper keeper){ // move towards target
+    	
+    	if((posY = targetY) & (posX = targetX)){ //arrived to target ,  doesnt move
+
+    		let dx = 0;
+    		let dy = 0;
+    		return false;
+    	}
+    	else{
+    			
+    			// save prev pos for erasing from screen
+    			let prevPosX = posX;
+    			let prevPosY = posY;
+    			let prevSize = Size;
+
+    			
+				// change step if out of bounds
+    			if (((posY + dy + Size) > screenHeight) | ((posY + dy - Size) < 0) | ((posX + dx + Size) > screenWidth) | ((posX + dx - Size) < 0)){
+
+    				let dx = 0;
+    				let dy = 0;
+    				if ((posX + dx + Size) > screenWidth){
+    					let posX = screenWidth - Size;
+    				}
+    				if ((posX + dx - Size) < 0){
+    					let posX = Size;
+    				}
+    				if((posY + dy + Size) > screenHeight){
+    					let posY = screenHeight - Size;
+
+    				}
+    				if((posY + dy + Size) < 0){
+    					let posY = Size;
+    				}
+    				return false;
+    				
+    				
+    			}
+    			else{ 
+    				if (~(goalst = null)){ // check for collison and change direction (target) accordingly (just for soccer ball the goalst and keeper not null)
+    					if (goalst.barCollision(posX, posY, Size, dx, dy) | keeper.collision(posX, posY, Size, dx, dy)){
+
+    						
+    						do setTarget(targetX - (25*dx), targetY - (15*dy), 25);
+
+    	
+    						return true;
+
+    					}
+    				}
+    				// fix dx and dy if the step is too big and we pass the target
+    				if (posX < targetX){
+    					if (posX + dx > targetX){
+    						
+    						let dx = targetX - posX;
+    					}
+    				}
+    				if (posX > targetX){
+    					if (posX + dx < targetX){
+    						
+    						let dx = targetX - posX;
+    					}
+    				}
+    				if (posX = targetX){
+    					let dx = 0;
+    				}
+    				if (posY < targetY){
+    					if (posY + dy > targetY){
+    						let dy = targetY - posY;
+    					}
+    				}
+    				if (posY > targetY){
+    					if (posY + dy < targetY){
+    						let dy = targetY - posY;
+
+    					}
+    				}
+    			
+    				if (posY = targetY){
+    					let dy = 0;
+    				}
+					
+					// change ball size for depth feel
+    				if (dy < 0 ){
+    					do decSize();
+    				}
+    				if ((dy > 0) & (posY > (screenHeight/2))){
+    					do incSize();
+    				}
+    				let posX = posX + dx;
+    				let posY = posY + dy;
+    				return true;
+    			}
+    		}
+
+    }
+
+
+}

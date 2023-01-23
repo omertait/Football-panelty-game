@@ -1,0 +1,88 @@
+class GoalStruct {
+	field int maxX, maxY;
+	field int topLeftBarX, topRightBarX, bottomLeftBarX, bottomRightBarX;
+	field int topLeftBarY, topRightBarY, bottomLeftBarY, bottomRightBarY;
+
+
+	constructor GoalStruct new(int screenWidth, int screenHeight) {
+		let maxX = screenWidth;
+		let maxY = screenHeight;
+		let topLeftBarX = maxX/8;
+		let topLeftBarY = maxY/8;
+		let topRightBarX = 7*(maxX/8);
+		let topRightBarY = maxY/8;
+		let bottomLeftBarX = maxX/8;
+		let bottomLeftBarY = maxY/2;
+		let bottomRightBarX = 7*(maxX/8);
+		let bottomRightBarY= maxY/2;
+		
+		return this;
+	}
+
+	method int getTopLeftBarX(){return topLeftBarX;}
+	method int getTopLeftBarY(){return topLeftBarY;}
+	method int getTopRightBarX(){return topRightBarX;}
+	method int getTopRightBarY(){return topRightBarY;}
+	method int getBottomLeftBarX(){return bottomLeftBarX;}
+	method int getBottomLeftBarY(){return bottomLeftBarY;}
+	method int getBottomRightBarX(){return bottomRightBarX;}
+	method int getBottomRightBarY(){return bottomRightBarY;}
+	method int getBottomNetY(){ return ((maxY/2)-(((maxY/2)-(maxY/8))/5));}
+
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+    
+
+
+    method boolean isInGoal(Ball ball) { // if the ball is inside the goal - for checking if we scored
+    	if(((ball.getx() - ball.getSize()) < bottomLeftBarX) | ((ball.getx() + ball.getSize()) > bottomRightBarX) | ((ball.gety() - ball.getSize()) < topLeftBarY) | ((ball.gety() + ball.getSize()) > bottomLeftBarY)){
+    		return false;
+    	}
+    	return true;
+
+    }
+
+    method boolean isOnGoal(int x, int y, int size) { // if the ball is on the goal - for checking if we need to draw it again
+    	if(((x + size) < (bottomLeftBarX - 1)) | ((x - size) > (bottomRightBarX + 1)) | ((y + size) < (topLeftBarY - 1)) | ((y - size) > (bottomLeftBarY + 1))){
+    		
+    		return false;
+
+    	}
+    	
+    	return true;
+
+    }
+
+
+    method boolean barCollision(int x, int y, int size, int dx, int dy) {
+    	// top bar collision
+    	if(((x - size + dx) > (topLeftBarX - 2)) & ((x + size + dx) < (topRightBarX + 2)) & (((y - size + dy) < (topLeftBarY + 1)) & ((y + size + dy) > (topLeftBarY - 1)))){
+    		
+    		return true;
+
+    	}
+
+    	// left bar collision
+    	if( (((x - size + dx) < (bottomLeftBarX + 1)) & ((x + size + dx) > bottomLeftBarX)) & (((y - size + dy) > (topLeftBarY - 1)) & ((y + size + dy) < (bottomLeftBarY)))){
+    		
+    		return true;
+
+    	}
+
+    	// right bar collision
+    	if((((x + size + dx) > (bottomRightBarX - 1)) & ((x - size + dx) < bottomRightBarX)) & (((y - size + dy) > (topRightBarY - 1)) & ((y + size + dy) < (bottomRightBarY)))){
+    		
+    		return true;
+
+    	}
+
+    	
+    	return false;
+
+    }
+
+
+}

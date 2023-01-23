@@ -1,0 +1,65 @@
+class Main {
+	
+	function void main(){
+		var Game game;
+		var int game_state, playAgain;
+		var Array players_names;
+		var String Player1, Player2;
+
+		
+		let players_names = StartingPage.load();
+		let Player1 = players_names[0];
+		let Player2 = players_names[1];
+		let game = Game.new(Player1, Player2);
+		let game_state = game.run();
+    
+		while (~(game_state = 0)) { 
+				
+				if (game.getWinnerName() = 0) { // player 1 won
+					do Graphics.drawGameOver(Player1, Player1, Player2, game.getPlayer1Score(), game.getPlayer2Score());
+				}
+				else{
+				 	if (game.getWinnerName() = 1){ // player 2 won
+						do Graphics.drawGameOver(Player2, Player1, Player2, game.getPlayer1Score(), game.getPlayer2Score());
+					}
+				}
+		
+				let playAgain = game.exit(); // check if user wants to play again
+				if(playAgain = 0){ // exit
+					let game_state = 0;
+					
+				}
+				else{
+					if (playAgain = 2){ // change players
+						let players_names = StartingPage.load();
+						let Player1 = players_names[0];
+						let Player2 = players_names[1];
+						do game.setFirstName(Player1);
+						do game.setSecondName(Player2);
+					}
+					else{ // = 1 , play again with the same players
+						
+						let Player1 = game.getFirstName();
+						let Player2 = game.getSecondName();
+						do game.setFirstName(Player1);
+						do game.setSecondName(Player2);
+						
+					}
+					do game.reset(true);
+					do Screen.clearScreen();
+					let game_state = game.run();
+				}
+
+
+		}
+
+		do game.dispose();
+		do Player1.dispose();
+		do Player2.dispose();
+		do players_names.dispose();
+		
+		return;
+	}
+
+
+}

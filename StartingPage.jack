@@ -1,0 +1,38 @@
+class StartingPage{
+    function Array load(){
+        var String first_name;
+		var String second_name;
+        var Array names;
+
+        do Screen.clearScreen();
+        do Output.moveCursor(4,8); 
+        do Output.printString("Game for Two Players");
+        do Output.moveCursor(6,8); 
+        do Output.printString("Hit Space/Up key to kick");
+        do Output.moveCursor(8,8); 
+        do Output.printString("Hold for stronger kick");
+        do Output.moveCursor(10,8); 
+        do Output.printString("the goal keeper will try to block your ball!");
+        do Output.moveCursor(12,8); 
+        do Output.printString("make more goals then your opponent and Win");
+        do Sys.wait(4000);
+        let names = Array.new(2);
+        do Screen.clearScreen();
+		do Output.moveCursor(5,8); 
+		let first_name = String.new(7);
+		let first_name = Keyboard.readLine("Enter the first player name (until 7 letters):");
+        do Screen.clearScreen();
+		do Output.moveCursor(5,8);
+		let second_name = String.new(7);
+		let second_name = Keyboard.readLine("Enter the second player name (until 7 letters):");
+		do Screen.clearScreen();
+		do Output.moveCursor(11,25);	
+		do Output.printString("GOOD LUCK!");
+		do Sys.wait(2000);
+		do Screen.clearScreen();
+        let names[0] = first_name;
+        let names[1] = second_name;
+        return names;
+
+    }
+}

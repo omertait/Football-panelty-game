@@ -1,0 +1,277 @@
+class Graphics {
+
+
+    function void drawGoalSt(GoalStruct goalst){
+    	var int netXDens, netYDens, topNetDx, topBarDx, bottomNetDx, i;
+		var int leftNetDy, leftBarDy, topLeftBarDx, bottomLeftBarDx;
+
+		var int topLeftBarX, topRightBarX, bottomLeftBarX, bottomRightBarX;
+		var int topLeftBarY, topRightBarY, bottomLeftBarY, bottomRightBarY;
+
+		var int topLeftNetX, topRightNetX, bottomLeftNetX, bottomRightNetX;
+		var int topLeftNetY, topRightNetY, bottomLeftNetY, bottomRightNetY;
+
+
+		let topLeftBarX = goalst.getTopLeftBarX();
+		let topLeftBarY = goalst.getTopLeftBarY();
+		let topRightBarX = goalst.getTopRightBarX();
+		let topRightBarY = goalst.getTopRightBarY();
+		let bottomLeftBarX = goalst.getBottomLeftBarX();
+		let bottomLeftBarY = goalst.getBottomLeftBarY();
+		let bottomRightBarX = goalst.getBottomRightBarX();
+		let bottomRightBarY = goalst.getBottomRightBarY();
+
+
+		let topLeftNetX = topLeftBarX+10;
+		let topLeftNetY = topLeftBarY+6;
+		let topRightNetX = topRightBarX-10;
+		let topRightNetY = topRightBarY+6;
+		let bottomLeftNetX = bottomLeftBarX+16;
+		let bottomLeftNetY = bottomLeftBarY-12;
+		let bottomRightNetX = bottomRightBarX-16;
+		let bottomRightNetY = bottomRightBarY-12;
+
+		let netXDens = 18;
+		let topNetDx = (topRightNetX - topLeftNetX)/netXDens;
+	
+		let topBarDx = (topRightBarX - topLeftBarX)/netXDens;
+		let bottomNetDx = (bottomRightNetX - bottomLeftNetX)/netXDens;
+		
+		
+		
+		let netYDens = 6;
+		let leftNetDy = (bottomLeftNetY - topLeftNetY)/netYDens;
+		let leftBarDy = (bottomLeftBarY - topLeftBarY)/netYDens;
+		
+		do Screen.setColor(true);
+
+		
+		
+
+		//outline
+		do Screen.drawLine(topLeftBarX,topLeftBarY,bottomLeftBarX,bottomLeftBarY);
+		do Screen.drawLine(topRightBarX,topRightBarY,bottomRightBarX,bottomRightBarY);
+		do Screen.drawLine(topLeftBarX,topLeftBarY,topRightBarX,topRightBarY);
+
+		//make outline strong
+		do Screen.drawLine(topLeftBarX - 1,topLeftBarY - 1,bottomLeftBarX - 1,bottomLeftBarY);
+		do Screen.drawLine(topRightBarX + 1,topRightBarY - 1,bottomRightBarX + 1,bottomRightBarY);
+		do Screen.drawLine(topLeftBarX - 1,topLeftBarY - 1,topRightBarX + 1,topRightBarY - 1);
+
+		//connecting bar to net
+		do Screen.drawLine(topRightBarX,topRightBarY,topRightNetX,topRightNetY);
+		do Screen.drawLine(bottomLeftBarX,bottomLeftBarY,bottomLeftNetX,bottomLeftNetY);
+		do Screen.drawLine(bottomRightBarX,bottomRightBarY,bottomRightNetX,bottomRightNetY);
+
+
+		//connecting net outline
+		do Screen.drawLine(topLeftNetX,topLeftNetY,topRightNetX,topRightNetY);
+		do Screen.drawLine(bottomLeftNetX,bottomLeftNetY,bottomRightNetX,bottomRightNetY);
+		do Screen.drawLine(topLeftNetX,topLeftNetY,bottomLeftNetX,bottomLeftNetY);
+		do Screen.drawLine(topRightNetX,topRightNetY,bottomRightNetX,bottomRightNetY);
+
+		//vertical net lines
+		let i = 0;
+		while(i < netXDens){
+			do Screen.drawLine(topLeftBarX+(i*topBarDx),topLeftBarY,topLeftNetX + (i*topNetDx), topLeftNetY);
+			do Screen.drawLine(topLeftNetX+(i*topNetDx),topLeftNetY,bottomLeftNetX + (i*bottomNetDx), bottomLeftNetY);
+			let i = i + 1;
+		}
+
+		//horizontal center net lines
+		let i = 1;
+		while(i < netYDens){
+			do Screen.drawLine(topLeftBarX,topLeftBarY+(i*leftBarDy),topLeftNetX,topLeftNetY + (i*leftNetDy));
+			do Screen.drawLine(topLeftNetX,topLeftNetY + (i*leftNetDy),topRightNetX,topRightNetY + (i*leftNetDy));
+
+			do Screen.drawLine(topRightBarX,topRightBarY+(i*leftBarDy),topRightNetX,topRightNetY + (i*leftNetDy));
+			let i = i + 1;
+		}
+
+		//vertical top and sides net lines
+		let netXDens = 3;
+		let topLeftBarDx = (topLeftNetX - topLeftBarX)/netXDens;
+		let bottomLeftBarDx = (bottomLeftNetX - bottomLeftBarX)/netXDens;
+		let leftNetDy = (topLeftNetY - topLeftBarY)/netXDens;
+		let leftNetDy = leftNetDy + netXDens; 
+		let i = 1;
+		while(i < netXDens){
+			do Screen.drawLine(topLeftBarX+(i*topLeftBarDx),topLeftBarY+(i*leftNetDy),bottomLeftBarX+(i*bottomLeftBarDx),bottomLeftBarY-(i*leftNetDy));
+			do Screen.drawLine(topRightBarX-(i*topLeftBarDx),topRightBarY+(i*leftNetDy),bottomRightBarX-(i*bottomLeftBarDx),bottomRightBarY-(i*leftNetDy));
+			let i = i + 1;
+		}
+
+		//horizontal top net lines
+		do Screen.drawLine(topRightNetX+10,topRightNetY-7,topLeftNetX-10,topLeftNetY-7);
+		do Screen.drawLine(topRightNetX+5,topRightNetY-3,topLeftNetX-5,topLeftNetY-3);
+
+
+		do Screen.setColor(true);
+		return;
+
+    }
+
+
+    function void drawBall(Ball ball, GoalStruct goalst, Keeper keeper){
+
+    		do Graphics.eraseBall(ball.getPrevx(), ball.getPrevy(), ball.getPrevSize(), goalst, keeper);
+			
+			
+
+	
+
+			// ball outline
+    		do Screen.setColor(true);
+    		do Screen.drawCircle(ball.getx(),ball.gety(),ball.getSize());
+    		do Screen.setColor(false);
+    		do Screen.drawCircle(ball.getx(),ball.gety(),ball.getSize()-1);
+    		do Screen.setColor(true);
+
+    		// pentagons
+    		// center pentagon
+    		// top
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15), ball.getx(), ball.gety() - ((2*ball.getSize())/5));
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15), ball.getx(), ball.gety() - ((2*ball.getSize())/5));
+
+    		// left right vertical
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15), ball.getx() - ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3));
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15), ball.getx() + ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3));
+    		
+    		// bottom horizontal
+    		do Screen.drawLine(ball.getx() - ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3), ball.getx() + ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3));
+
+    		// bottom left pentagon connecting lines
+    		do Screen.drawLine(ball.getx() - ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15), ball.getx() - ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() - ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15), ball.getx() - ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3));
+    		do Screen.drawLine(ball.getx() - ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15), ball.getx() - ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize()/5)));
+
+    		// bottom right pentagon connecting lines
+    		do Screen.drawLine(ball.getx() + ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15), ball.getx() + ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() + ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15), ball.getx() + ((4*ball.getSize())/15), ball.gety() + (ball.getSize()/3));
+    		do Screen.drawLine(ball.getx() + ((7*ball.getSize())/15),ball.gety() + ((8*ball.getSize())/15), ball.getx() + ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize()/5)));
+
+    		// top left pentagon connecting lines
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() - ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5));
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5), ball.getx() - ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() - ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() - ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5));
+
+    		// top right pentagon connecting lines
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() + ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5));
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5), ball.getx() + ((2*ball.getSize())/5),ball.gety() - ((2*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() + ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() + ((2*ball.getSize())/3),ball.gety() - (ball.getSize()/5));
+
+    		// top pentagon connecting lines
+    		do Screen.drawLine(ball.getx() - (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5), ball.getx(), ball.gety() - ((11*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx(), ball.gety() - ((11*ball.getSize())/15), ball.getx(), ball.gety() - ((2*ball.getSize())/5));
+    		do Screen.drawLine(ball.getx() + (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5), ball.getx(), ball.gety() - ((11*ball.getSize())/15));
+
+    		//hexagons
+    		// top left hexagon
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() - (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5));
+    		do Screen.drawLine(ball.getx() - ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() - ((4*ball.getSize())/5),ball.gety() - ((8*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() - (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5), ball.getx() - (ball.getSize()/3),ball.gety() - ((14*ball.getSize())/15));
+
+    		// top right hexagon
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() + (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5));
+    		do Screen.drawLine(ball.getx() + ((2*ball.getSize())/3),ball.gety() - ((8*ball.getSize())/15), ball.getx() + ((4*ball.getSize())/5),ball.gety() - ((8*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() + (ball.getSize()/3),ball.gety() - ((4*ball.getSize())/5), ball.getx() + (ball.getSize()/3),ball.gety() - ((14*ball.getSize())/15));
+
+    		// bottom left hexagon
+    		do Screen.drawLine(ball.getx() - ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() - ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() - ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() - ball.getSize(),ball.gety());
+    		do Screen.drawLine(ball.getx() - ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15), ball.getx() - ((4*ball.getSize())/5),ball.gety() + ((3*ball.getSize())/5));
+
+
+    		// bottom right hexagon
+    		do Screen.drawLine(ball.getx() + ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() + ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() + ((13*ball.getSize())/15),ball.gety() + (ball.getSize()/15), ball.getx() + ball.getSize(),ball.gety());
+    		do Screen.drawLine(ball.getx() + ((11*ball.getSize())/15),ball.gety() + ((7*ball.getSize())/15), ball.getx() + ((4*ball.getSize())/5),ball.gety() + ((3*ball.getSize())/5));
+
+    		// bottom hexagon
+    		do Screen.drawLine(ball.getx() - ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize()/5)), ball.getx() + ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize())/5));
+    		do Screen.drawLine(ball.getx() - ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize()/5)), ball.getx() - (ball.getSize()/3), ball.gety() + ((14*ball.getSize())/15));
+    		do Screen.drawLine(ball.getx() + ((4*ball.getSize())/15), ball.gety() + ((4*ball.getSize()/5)), ball.getx() + (ball.getSize()/3), ball.gety() + ((14*ball.getSize())/15));
+
+
+    	
+    	return;
+    	
+    }
+
+    function void eraseBall(int x, int y, int size, GoalStruct goalst, Keeper keeper){
+    	if ((x = -1) | (y = -1) | (size = -1)){
+    		return;
+    	}
+		do Screen.setColor(false);
+    	do Screen.drawCircle(x,y,size);
+    	do Screen.setColor(true);
+    	if(goalst.isOnGoal(x, y, size)){// if the ball we erased was on goal we need to draw it again
+			do Graphics.drawGoalSt(goalst);	
+		}
+		if(keeper.isOnKeeper(x, y, size)){ // if the ball we erased was on keeper we need to draw it again
+			do Graphics.drawKeeper(keeper, goalst);
+		}
+    	
+    	return;
+    }
+
+
+    function void drawTarget(Ball target, GoalStruct goalst, Keeper keeper){
+    	do Graphics.eraseBall(target.getPrevx(), target.getPrevy(), target.getPrevSize(), goalst, keeper);
+    	
+		do Screen.setColor(true);
+    	do Screen.drawCircle(target.getx(),target.gety(),target.getSize());
+    	return;
+    }
+
+
+    function void drawKeeper(Keeper keeper, GoalStruct goalst){
+    	do Graphics.eraseKeeper(keeper.getPrevx(), keeper.getPrevy(), keeper.getwidth(), keeper.getheight(), goalst);
+		do Screen.setColor(true);
+    	do Screen.drawRectangle(keeper.getx(), keeper.gety() - keeper.getheight(), keeper.getx() + keeper.getwidth(), keeper.gety());
+    	return;
+    }
+
+    function void eraseKeeper(int bottomLeftX, int bottomLeftY,int width,int height, GoalStruct goalst){
+    	if ((bottomLeftX = -1) | (bottomLeftY = -1)){
+    		return;
+    	}
+		do Screen.setColor(false);
+    	do Screen.drawRectangle(bottomLeftX, bottomLeftY - height, bottomLeftX + width, bottomLeftY);
+    	do Screen.setColor(true);
+    	do Graphics.drawGoalSt(goalst);
+		
+    	return;
+    }
+
+
+
+     function void drawGameOver(String winner, String fname, String sname, int playerScore, int opponentScore){
+    	do Screen.clearScreen();
+    	do Output.moveCursor(11,25);
+	    do Output.printString("Winner: ");
+	    do Output.printString(winner);
+	    do Output.moveCursor(17,18);
+	   	do Output.printString("Score");
+	   	do Output.moveCursor(15,25);
+	   	do Output.printString(fname);
+	   	do Output.moveCursor(15,32);
+	   	do Output.printString(sname);
+	   	do Output.moveCursor(17,27);
+	   	do Output.printInt(playerScore);
+	   	do Output.moveCursor(17,35);
+	   	do Output.printInt(opponentScore);
+		do Output.moveCursor(0,0);
+	   	do Output.printString("Press R to Change players");
+		do Output.moveCursor(2,0);
+	   	do Output.printString("Esc to Exit");
+		do Output.moveCursor(4,0);
+	   	do Output.printString("any other key to play again");
+
+	   	do Screen.drawLine(190,180,340,180);
+	   	do Screen.drawLine(250,160,250,200);		
+	    
+    	return;
+    }
+
+}

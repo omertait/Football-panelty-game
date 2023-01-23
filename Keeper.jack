@@ -1,0 +1,140 @@
+class Keeper{
+	field int bottomLeftX, bottomLeftY, dx, dy, width, height;
+	field int prevBottomLeftX, prevBottomLeftY;
+	
+	constructor Keeper new(int x, int y, int w, int h){
+		let bottomLeftX = x;
+		let bottomLeftY = y;
+		let prevBottomLeftX = -1;
+		let prevBottomLeftY = -1;
+		let width = w;
+		let height = h;
+		let dx = 0;
+		let dy = 0;
+		return this;
+	}
+
+	method int getx(){return bottomLeftX;}
+	method int gety(){return bottomLeftY;}
+	method int getPrevx(){return prevBottomLeftX;}
+	method int getPrevy(){return prevBottomLeftY;}
+	method int getwidth(){return width;}
+	method int getheight(){return height;}
+	method int getdx(){return dx;}
+	method int getdy(){return dy;}
+
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	method void reset(int x, int y){
+		let bottomLeftX = x;
+		let bottomLeftY = y;
+		let prevBottomLeftX = -1;
+		let prevBottomLeftY = -1;
+		let dx = 0;
+		let dy = 0;
+		return;
+	}
+	method void setDirection(int d){
+		if(d = 0){ // stay
+			let dx = 0;
+			let dy = 0;
+			return;
+		}
+		if(d = 1){ // right
+			let dx = 7;
+			let dy = 0;
+			return;
+		}
+		if(d = 2){ // top right
+			let dx = 7;
+			let dy = -1;
+			return;
+		}
+		if(d = 3){ // left
+			let dx = -7;
+			let dy = 0;
+			return;
+		}
+		if(d = 4){ // top left
+			let dx = -7;
+			let dy = -1;
+			return;
+		}
+		return;
+	}
+	
+
+	method void move(int screenWidth, int screenHeight){ // moves according to the direction
+		let prevBottomLeftX = bottomLeftX;
+    	let prevBottomLeftY = bottomLeftY;
+		if (((bottomLeftY + dy) > (screenHeight - 1)) | ((bottomLeftY + dy - height) < 0) | ((bottomLeftX + dx + width) > (screenWidth - 1)) | ((bottomLeftX + dx) < 0)){
+
+    				let dx = 0;
+    				let dy = 0;
+					// fix if out of boundries
+    				if ((bottomLeftX + dx + width) > (screenWidth - 1)){
+    					let bottomLeftX = screenWidth - width - 1;
+    				}
+    				if ((bottomLeftX + dx) < 0){
+    					let bottomLeftX = 0;
+    				}
+    				if((bottomLeftY + dy) > screenHeight){
+    					let bottomLeftY = screenHeight - 1;
+
+    				}
+    				if((bottomLeftY + dy - height) < 0){
+    					let bottomLeftY = height ;
+    				}
+    				
+    				return;
+    				
+    				
+    	}
+    	
+
+    	let bottomLeftX = bottomLeftX + dx;
+    	let bottomLeftY = bottomLeftY + dy;
+    	return;
+	}
+
+	method boolean collision(int ballX, int ballY, int ballSize, int ballDx, int ballDy){
+		// left collision
+		if(coordsOnKeeper(ballX + ballDx + ballSize, ballY + ballDy) & (~(coordsOnKeeper(ballX + ballSize, ballY)))){
+			return true;
+		}
+
+		// right collision
+		if (coordsOnKeeper(ballX + ballDx - ballSize, ballY + ballDy) & (~(coordsOnKeeper(ballX - ballSize, ballY + ballDy)))){
+			return true;
+		}
+
+
+		// bottom collision
+		if (coordsOnKeeper(ballX + ballDx, ballY + ballDy - ballSize) & (~(coordsOnKeeper(ballX + ballDx, ballY + ballDy)))){
+			return true;
+		}
+		return false;
+	}
+
+	method boolean isOnKeeper(int x, int y, int size) {// if the ball is on the keeper - for checking if we need to draw it again
+    	if(((x + size) < bottomLeftX) | ((x - size) > (bottomLeftX + width)) | ((y - size) > bottomLeftY ) | ((y + size) < (bottomLeftY - height))){
+    		
+    		return false;
+
+    	}
+    	
+    	return true;
+
+    }
+
+    method boolean coordsOnKeeper(int x, int y){ // if the coords point inside the keeper rectangle
+
+    	if ((x > (bottomLeftX - 1)) & (x < (bottomLeftX + width + 1)) & (y < (bottomLeftY + 1)) & (y > (bottomLeftY - height + 1))){
+    		return true;
+    	}
+    	return false;
+    }
+}
